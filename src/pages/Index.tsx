@@ -286,8 +286,8 @@ const HomePage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 space-y-24 sm:space-y-36">
 
         {/* Why Choose Xtratoon */}
-        <section ref={whyRef}>
-          <motion.div className="text-center mb-16" style={{ y: whyTitleY, opacity: whyTitleOpacity }}>
+        <section>
+          <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
             <p className="text-sm font-medium text-muted-foreground uppercase tracking-[0.2em] mb-4">Why readers love us</p>
             <h2 className="text-display text-4xl sm:text-6xl lg:text-7xl tracking-wider mb-4">
               Why Choose <span className="text-primary">Xtratoon</span>.
