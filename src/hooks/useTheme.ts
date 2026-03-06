@@ -5,7 +5,7 @@ export function useTheme() {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('xtratoon-theme');
       if (stored === 'dark' || stored === 'light') return stored;
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      return 'light'; // Default to light mode
     }
     return 'light';
   });
