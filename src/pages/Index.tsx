@@ -120,8 +120,8 @@ const RevenueStep: React.FC<{ item: typeof revenueSteps[0]; index: number; total
       <motion.div
         className="flex-1 rounded-2xl border border-border bg-card px-5 py-4 sm:px-6 sm:py-5 mb-6"
         style={{ boxShadow: 'var(--shadow-card)' }}
-        initial={{ opacity: 0, x: -40, filter: 'blur(10px)' }}
-        animate={isInView ? { opacity: 1, x: 0, filter: 'blur(0px)' } : { opacity: 0, x: -40, filter: 'blur(10px)' }}
+        initial={{ opacity: 0, x: -30 }}
+        animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
         transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         whileHover={{ scale: 1.02, x: 6 }}
       >
