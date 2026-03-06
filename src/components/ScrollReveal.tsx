@@ -9,11 +9,11 @@ interface ScrollRevealProps {
   distance?: number;
 }
 
-const directionMap = {
-  up: { y: 1 },
-  down: { y: -1 },
-  left: { x: 1 },
-  right: { x: -1 },
+const directionMap: Record<string, { x: number; y: number }> = {
+  up: { x: 0, y: 1 },
+  down: { x: 0, y: -1 },
+  left: { x: 1, y: 0 },
+  right: { x: -1, y: 0 },
 };
 
 const ScrollReveal: React.FC<ScrollRevealProps> = ({ 
