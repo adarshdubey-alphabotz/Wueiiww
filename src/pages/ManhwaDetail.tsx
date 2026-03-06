@@ -36,10 +36,10 @@ const ManhwaDetail: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen pt-16 no-select" onContextMenu={e => e.preventDefault()}>
+    <div className="min-h-screen pt-16 no-select bg-background" onContextMenu={e => e.preventDefault()}>
       {/* Hero banner */}
       <div className="relative h-64 sm:h-80 lg:h-96 overflow-hidden">
-        <div className={`absolute inset-0 ${manhwa.coverGradient} opacity-25 blur-3xl scale-150`} />
+        <div className={`absolute inset-0 ${manhwa.coverGradient} opacity-20`} />
         <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/60 to-background" />
         
         <motion.div 
@@ -48,30 +48,30 @@ const ManhwaDetail: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
-          <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors group">
+          <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors group font-medium">
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Back
           </button>
           <div className="flex gap-4 sm:gap-6 items-end">
             {/* Cover */}
             <motion.div 
-              className={`w-28 sm:w-36 lg:w-44 aspect-[3/4] rounded-2xl ${manhwa.coverGradient} shadow-2xl flex-shrink-0 border-2 border-foreground/10`}
-              initial={{ opacity: 0, scale: 0.8, rotate: -3 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              className={`w-28 sm:w-36 lg:w-44 aspect-[3/4] ${manhwa.coverGradient} flex-shrink-0 border-2 border-foreground`}
+              style={{ boxShadow: '4px 4px 0 hsl(0 0% 8%)' }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              whileHover={{ scale: 1.03, rotate: 1 }}
             />
             {/* Info */}
             <div className="flex-1 min-w-0">
-              <h1 className="text-display text-2xl sm:text-4xl lg:text-5xl leading-tight mb-2 truncate">{manhwa.title}</h1>
+              <h1 className="text-display text-3xl sm:text-5xl lg:text-6xl leading-tight mb-2 truncate tracking-wider">{manhwa.title}</h1>
               <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-muted-foreground">
-                <Link to={`/publisher/${manhwa.publisherId}`} className="hover:text-primary transition-colors font-medium">{manhwa.author}</Link>
+                <Link to={`/publisher/${manhwa.publisherId}`} className="hover:text-primary transition-colors font-semibold">{manhwa.author}</Link>
                 <span className="hidden sm:inline">·</span>
                 <Link to={`/publisher/${manhwa.publisherId}`} className="hidden sm:inline hover:text-primary transition-colors">{manhwa.publisher}</Link>
-                <span className={`px-2.5 py-0.5 text-xs font-bold rounded-lg ${manhwa.status === 'Ongoing' ? 'bg-accent/20 text-accent' : manhwa.status === 'Completed' ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'}`}>{manhwa.status}</span>
+                <span className={`px-2.5 py-0.5 text-xs font-bold border ${manhwa.status === 'Ongoing' ? 'border-foreground/30 bg-background' : manhwa.status === 'Completed' ? 'border-primary bg-primary/10 text-primary' : 'border-foreground/20 bg-muted text-muted-foreground'}`}>{manhwa.status}</span>
               </div>
               <div className="flex flex-wrap gap-1.5 mt-3">
                 {manhwa.genres.map(g => (
-                  <Link key={g} to={`/browse?genre=${g}`} className="px-2.5 py-1 text-xs rounded-lg glass hover:bg-primary/10 hover:text-primary transition-colors font-medium">{g}</Link>
+                  <Link key={g} to={`/browse?genre=${g}`} className="px-2.5 py-1 text-xs border border-foreground/20 hover:border-primary hover:text-primary transition-colors font-medium">{g}</Link>
                 ))}
               </div>
             </div>
@@ -84,11 +84,11 @@ const ManhwaDetail: React.FC = () => {
         <StaggerContainer className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {stats.map(s => (
             <StaggerItem key={s.label}>
-              <div className="glass-iridescent rounded-2xl px-4 py-4 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center">{s.icon}</div>
+              <div className="brutal-card p-4 flex items-center gap-3">
+                <div className="w-10 h-10 border border-foreground/20 flex items-center justify-center">{s.icon}</div>
                 <div>
-                  <div className="text-xl sm:text-2xl font-bold font-display">{s.value}</div>
-                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{s.label}</div>
+                  <div className="text-xl sm:text-2xl font-display tracking-wider">{s.value}</div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-widest">{s.label}</div>
                 </div>
               </div>
             </StaggerItem>
@@ -106,12 +106,12 @@ const ManhwaDetail: React.FC = () => {
             <ScrollReveal delay={0.1}>
               <div className="flex flex-wrap gap-3">
                 <MagneticButton>
-                  <Link to={`/read/${manhwa.id}/1`} className="inline-flex items-center gap-2 px-7 py-3.5 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg shadow-primary/25 hover:brightness-110 transition-all text-sm">
+                  <Link to={`/read/${manhwa.id}/1`} className="btn-accent rounded-none text-sm">
                     <Play className="w-4 h-4 fill-current" /> Read Chapter 1
                   </Link>
                 </MagneticButton>
                 <MagneticButton>
-                  <button className="inline-flex items-center gap-2 px-7 py-3.5 glass-iridescent font-bold rounded-xl transition-all text-sm">
+                  <button className="btn-outline rounded-none text-sm">
                     <Bookmark className="w-4 h-4" /> Add to Library
                   </button>
                 </MagneticButton>
@@ -121,11 +121,11 @@ const ManhwaDetail: React.FC = () => {
             {/* Chapters */}
             <ScrollReveal delay={0.15}>
               <section>
-                <h2 className="text-display text-xl mb-4 flex items-center gap-2">
-                  <div className="w-1 h-6 bg-primary rounded-full" />
-                  Chapters ({manhwa.chapters.length})
+                <h2 className="text-display text-2xl mb-4 flex items-center gap-2 tracking-wider">
+                  <div className="w-1.5 h-6 bg-primary" />
+                  CHAPTERS ({manhwa.chapters.length})
                 </h2>
-                <div className="glass rounded-2xl overflow-hidden">
+                <div className="border-2 border-foreground overflow-hidden" style={{ boxShadow: '4px 4px 0 hsl(0 0% 8%)' }}>
                   {visibleChapters.map((ch, i) => (
                     <motion.div
                       key={ch.id}
@@ -134,10 +134,10 @@ const ManhwaDetail: React.FC = () => {
                       viewport={{ once: true }}
                       transition={{ delay: Math.min(i * 0.03, 0.3) }}
                     >
-                      <Link to={`/read/${manhwa.id}/${ch.number}`} className={`flex items-center justify-between px-4 py-3.5 hover:bg-primary/5 transition-colors text-sm group ${i !== visibleChapters.length - 1 ? 'border-b border-border/30' : ''}`}>
+                      <Link to={`/read/${manhwa.id}/${ch.number}`} className={`flex items-center justify-between px-4 py-3.5 hover:bg-primary/5 transition-colors text-sm group ${i !== visibleChapters.length - 1 ? 'border-b border-foreground/10' : ''}`}>
                         <div className="flex items-center gap-3">
                           <span className="text-muted-foreground font-mono text-xs w-8 text-right">#{ch.number}</span>
-                          <span className="font-medium group-hover:text-primary transition-colors">{ch.title}</span>
+                          <span className="font-semibold group-hover:text-primary transition-colors">{ch.title}</span>
                         </div>
                         <div className="flex items-center gap-4 text-xs text-muted-foreground">
                           <span className="hidden sm:block">{formatViews(ch.views)} views</span>
@@ -148,7 +148,7 @@ const ManhwaDetail: React.FC = () => {
                     </motion.div>
                   ))}
                   {manhwa.chapters.length > 10 && (
-                    <button onClick={() => setShowAllChapters(!showAllChapters)} className="w-full py-3.5 text-sm text-primary font-medium hover:bg-primary/5 transition-colors">
+                    <button onClick={() => setShowAllChapters(!showAllChapters)} className="w-full py-3.5 text-sm text-primary font-semibold hover:bg-primary/5 transition-colors border-t border-foreground/10">
                       {showAllChapters ? 'Show Less' : `Show All ${manhwa.chapters.length} Chapters`}
                     </button>
                   )}
@@ -160,7 +160,7 @@ const ManhwaDetail: React.FC = () => {
           {/* Sidebar */}
           <div className="space-y-4">
             <ScrollReveal direction="right">
-              <div className="glass-iridescent rounded-2xl p-5">
+              <div className="brutal-card p-5">
                 <p className="text-xs text-muted-foreground flex items-start gap-3 leading-relaxed">
                   <span className="text-xl flex-shrink-0">🔒</span>
                   Content protected by Xtratoon. Unauthorized reproduction or distribution is prohibited.
@@ -173,16 +173,16 @@ const ManhwaDetail: React.FC = () => {
         {/* Comments */}
         <ScrollReveal>
           <section>
-            <h2 className="text-display text-xl mb-4 flex items-center gap-2">
-              <MessageSquare className="w-5 h-5" /> Comments
+            <h2 className="text-display text-2xl mb-4 flex items-center gap-2 tracking-wider">
+              <MessageSquare className="w-5 h-5" /> COMMENTS
             </h2>
             <StaggerContainer className="space-y-3">
               {mockComments.map((c, i) => (
                 <StaggerItem key={i}>
-                  <div className="glass rounded-2xl p-4">
+                  <div className="brutal-card p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 rounded-xl gradient-cover-4 flex items-center justify-center text-[10px] font-bold">{c.user[0]}</div>
-                      <span className="text-sm font-medium">{c.user}</span>
+                      <div className="w-8 h-8 gradient-cover-4 flex items-center justify-center text-[10px] font-bold border border-foreground">{c.user[0]}</div>
+                      <span className="text-sm font-semibold">{c.user}</span>
                       <span className="text-xs text-muted-foreground">{c.time}</span>
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed">{c.text}</p>
@@ -197,11 +197,11 @@ const ManhwaDetail: React.FC = () => {
         {moreByPublisher.length > 0 && (
           <ScrollReveal>
             <section>
-              <h2 className="text-display text-xl mb-4 flex items-center gap-2">
-                <div className="w-1 h-6 bg-secondary rounded-full" />
-                More by {manhwa.publisher}
+              <h2 className="text-display text-2xl mb-4 flex items-center gap-2 tracking-wider">
+                <div className="w-1.5 h-6 bg-foreground" />
+                MORE BY {manhwa.publisher.toUpperCase()}
               </h2>
-              <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
+              <div className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
                 {moreByPublisher.map(m => (
                   <div key={m.id} className="snap-start">
                     <ManhwaCard manhwa={m} />
