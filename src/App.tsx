@@ -2,12 +2,14 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AnimatePresence } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/JsonLd";
 import AuthModal from "@/components/AuthModal";
+import PageTransition from "@/components/PageTransition";
 import Index from "./pages/Index";
 import ManhwaDetail from "./pages/ManhwaDetail";
 import ReaderPage from "./pages/ReaderPage";
@@ -31,24 +33,33 @@ const AntiPiracy = () => {
   return null;
 };
 
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<PageTransition><Index /></PageTransition>} />
+        <Route path="/manhwa/:id" element={<PageTransition><ManhwaDetail /></PageTransition>} />
+        <Route path="/read/:id/:chapter" element={<PageTransition><ReaderPage /></PageTransition>} />
+        <Route path="/browse" element={<PageTransition><BrowsePage /></PageTransition>} />
+        <Route path="/charts" element={<PageTransition><TopChartsPage /></PageTransition>} />
+        <Route path="/publisher/:id" element={<PageTransition><PublisherProfile /></PageTransition>} />
+        <Route path="/dashboard" element={<PageTransition><PublisherDashboard /></PageTransition>} />
+        <Route path="/admin" element={<PageTransition><AdminPanel /></PageTransition>} />
+        <Route path="/library" element={<PageTransition><MyLibrary /></PageTransition>} />
+        <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+      </Routes>
+    </AnimatePresence>
+  );
+};
+
 const AppLayout = () => (
   <>
     <AntiPiracy />
     <JsonLd />
     <Navbar />
     <AuthModal />
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/manhwa/:id" element={<ManhwaDetail />} />
-      <Route path="/read/:id/:chapter" element={<ReaderPage />} />
-      <Route path="/browse" element={<BrowsePage />} />
-      <Route path="/charts" element={<TopChartsPage />} />
-      <Route path="/publisher/:id" element={<PublisherProfile />} />
-      <Route path="/dashboard" element={<PublisherDashboard />} />
-      <Route path="/admin" element={<AdminPanel />} />
-      <Route path="/library" element={<MyLibrary />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <AnimatedRoutes />
     <Footer />
   </>
 );
