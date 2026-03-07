@@ -4,7 +4,11 @@ import { Search, Bell, Menu, X, ChevronDown, User as UserIcon, LogOut, BookOpen,
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/hooks/useTheme';
-import { mockNotifications, allGenres, publishers } from '@/data/mockData';
+
+const allGenres = [
+  'Action', 'Fantasy', 'Romance', 'Sci-Fi', 'Thriller', 'Drama',
+  'Mystery', 'Horror', 'Slice of Life', 'Adventure', 'Historical', 'School',
+];
 
 const Navbar: React.FC = () => {
   const { user, logout, setShowAuthModal, setAuthTab } = useAuth();
