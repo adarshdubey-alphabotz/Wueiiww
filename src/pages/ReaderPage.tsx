@@ -1,32 +1,34 @@
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
-import { manhwaList } from '@/data/mockData';
+import { useChapter } from '@/hooks/useApi';
 
 const ReaderPage: React.FC = () => {
   const { id, chapter } = useParams();
   const navigate = useNavigate();
-  const manhwa = manhwaList.find(m => m.id === id);
-  const chapterNum = parseInt(chapter || '1');
+  const chapterSlug = chapter?.startsWith('chapter-') ? chapter : `chapter-${chapter}`;
+  const { data: chapterData, isLoading } = useChapter(id || '', chapterSlug);
   const [showNav, setShowNav] = useState(true);
   const [chapterDropdown, setChapterDropdown] = useState(false);
 
-  if (!manhwa) return (
+  if (isLoading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
-      <p className="text-white/50">Not found</p>
+      <p className="text-white/50">Loading chapter...</p>
     </div>
   );
 
-  const totalChapters = manhwa.chapters.length;
-  const progress = (chapterNum / totalChapters) * 100;
+  if (!chapterData) return (
+    <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
+      <p className="text-white/50">Chapter not found</p>
+    </div>
+  );
 
-  const readerGradients = [
-    'linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-    'linear-gradient(180deg, #0f3460 0%, #533483 50%, #e94560 100%)',
-    'linear-gradient(180deg, #e94560 0%, #533483 50%, #0f3460 100%)',
-    'linear-gradient(180deg, #16213e 0%, #1a1a2e 50%, #0f0f23 100%)',
-    'linear-gradient(180deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)',
-  ];
+  const chapterNum = chapterData.chapterNumber;
+  const mangaSlug = chapterData.manga.slug;
+  const mangaTitle = chapterData.manga.title;
+  const pages = chapterData.pages || [];
+  const prevChapter = chapterData.prevChapter;
+  const nextChapter = chapterData.nextChapter;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] no-select relative" onContextMenu={e => e.preventDefault()}>
@@ -35,37 +37,23 @@ const ReaderPage: React.FC = () => {
       {showNav && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a]/90 backdrop-blur-md border-b border-white/10">
           <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
-            <button onClick={() => navigate(`/manhwa/${manhwa.id}`)} className="flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors">
+            <button onClick={() => navigate(`/manhwa/${mangaSlug}`)} className="flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors">
               <ArrowLeft className="w-4 h-4" /> Back
             </button>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-white truncate max-w-[150px]">{manhwa.title}</span>
-              <div className="relative">
-                <button onClick={() => setChapterDropdown(!chapterDropdown)} className="flex items-center gap-1 px-3 py-1.5 border border-white/20 text-sm text-white">
-                  Ch. {chapterNum} <ChevronDown className="w-3 h-3" />
-                </button>
-                {chapterDropdown && (
-                  <>
-                    <div className="fixed inset-0" onClick={() => setChapterDropdown(false)} />
-                    <div className="absolute right-0 top-full mt-2 w-48 bg-[#1a1a1a] border border-white/10 max-h-60 overflow-y-auto">
-                      {manhwa.chapters.map(ch => (
-                        <Link key={ch.id} to={`/read/${manhwa.id}/${ch.number}`} onClick={() => setChapterDropdown(false)} className={`block px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors ${ch.number === chapterNum ? 'text-[#FF2D6B] bg-[#FF2D6B]/10' : ''}`}>
-                          Chapter {ch.number}: {ch.title}
-                        </Link>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
+              <span className="text-sm font-medium text-white truncate max-w-[150px]">{mangaTitle}</span>
+              <button onClick={() => setChapterDropdown(!chapterDropdown)} className="flex items-center gap-1 px-3 py-1.5 border border-white/20 text-sm text-white">
+                Ch. {chapterNum} <ChevronDown className="w-3 h-3" />
+              </button>
             </div>
             <div className="flex items-center gap-1">
-              {chapterNum > 1 && (
-                <Link to={`/read/${manhwa.id}/${chapterNum - 1}`} className="p-2 text-white/70 hover:text-white">
+              {prevChapter != null && (
+                <Link to={`/read/${mangaSlug}/chapter-${prevChapter}`} className="p-2 text-white/70 hover:text-white">
                   <ChevronLeft className="w-4 h-4" />
                 </Link>
               )}
-              {chapterNum < totalChapters && (
-                <Link to={`/read/${manhwa.id}/${chapterNum + 1}`} className="p-2 text-white/70 hover:text-white">
+              {nextChapter != null && (
+                <Link to={`/read/${mangaSlug}/chapter-${nextChapter}`} className="p-2 text-white/70 hover:text-white">
                   <ChevronRight className="w-4 h-4" />
                 </Link>
               )}
@@ -78,23 +66,30 @@ const ReaderPage: React.FC = () => {
         <div className="px-2 text-center text-xs text-white/30 py-4">
           🔒 Content protected by Xtratoon · Tap to toggle navigation
         </div>
-        {readerGradients.map((grad, i) => (
-          <div key={i} className="w-full relative" style={{ background: grad, height: '800px', userSelect: 'none', WebkitUserDrag: 'none', pointerEvents: 'none' } as React.CSSProperties} draggable={false}>
-            <div className="absolute inset-0 flex items-center justify-center opacity-10">
-              <span className="text-6xl font-display font-black text-white">PANEL {i + 1}</span>
-            </div>
-          </div>
+        {pages.map((p) => (
+          <img
+            key={p.page}
+            src={p.img}
+            alt={`Page ${p.page}`}
+            loading="lazy"
+            className="w-full"
+            style={{ userSelect: 'none', pointerEvents: 'none' } as React.CSSProperties}
+            draggable={false}
+          />
         ))}
+        {pages.length === 0 && (
+          <div className="text-center py-20 text-white/30">No pages available for this chapter.</div>
+        )}
         <div className="text-center py-8 space-y-4">
           <p className="text-white/50 text-sm">End of Chapter {chapterNum}</p>
           <div className="flex justify-center gap-3">
-            {chapterNum > 1 && (
-              <Link to={`/read/${manhwa.id}/${chapterNum - 1}`} className="px-4 py-2 border border-white/20 text-white text-sm font-medium flex items-center gap-1 hover:bg-white/5">
+            {prevChapter != null && (
+              <Link to={`/read/${mangaSlug}/chapter-${prevChapter}`} className="px-4 py-2 border border-white/20 text-white text-sm font-medium flex items-center gap-1 hover:bg-white/5">
                 <ChevronLeft className="w-4 h-4" /> Previous
               </Link>
             )}
-            {chapterNum < totalChapters && (
-              <Link to={`/read/${manhwa.id}/${chapterNum + 1}`} className="px-4 py-2 bg-[#FF2D6B] text-white text-sm font-bold flex items-center gap-1 border-2 border-white/20" style={{ boxShadow: '3px 3px 0 rgba(255,255,255,0.15)' }}>
+            {nextChapter != null && (
+              <Link to={`/read/${mangaSlug}/chapter-${nextChapter}`} className="px-4 py-2 bg-[#FF2D6B] text-white text-sm font-bold flex items-center gap-1 border-2 border-white/20" style={{ boxShadow: '3px 3px 0 rgba(255,255,255,0.15)' }}>
                 Next <ChevronRight className="w-4 h-4" />
               </Link>
             )}
@@ -106,22 +101,21 @@ const ReaderPage: React.FC = () => {
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#0a0a0a]/90 backdrop-blur-md border-t border-white/10">
           <div className="max-w-3xl mx-auto px-4 py-3">
             <div className="flex items-center gap-3">
-              {chapterNum > 1 && (
-                <Link to={`/read/${manhwa.id}/${chapterNum - 1}`} className="p-2 text-white/70 hover:text-white">
+              {prevChapter != null && (
+                <Link to={`/read/${mangaSlug}/chapter-${prevChapter}`} className="p-2 text-white/70 hover:text-white">
                   <ChevronLeft className="w-4 h-4" />
                 </Link>
               )}
               <div className="flex-1">
                 <div className="h-1.5 bg-white/10 overflow-hidden">
-                  <div className="h-full bg-[#FF2D6B] transition-all" style={{ width: `${progress}%` }} />
+                  <div className="h-full bg-[#FF2D6B] transition-all" style={{ width: '50%' }} />
                 </div>
                 <div className="flex justify-between mt-1">
                   <span className="text-[10px] text-white/40">Ch. {chapterNum}</span>
-                  <span className="text-[10px] text-white/40">{Math.round(progress)}%</span>
                 </div>
               </div>
-              {chapterNum < totalChapters && (
-                <Link to={`/read/${manhwa.id}/${chapterNum + 1}`} className="p-2 text-white/70 hover:text-white">
+              {nextChapter != null && (
+                <Link to={`/read/${mangaSlug}/chapter-${nextChapter}`} className="p-2 text-white/70 hover:text-white">
                   <ChevronRight className="w-4 h-4" />
                 </Link>
               )}
