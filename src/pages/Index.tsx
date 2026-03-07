@@ -4,9 +4,9 @@ import { Star, Play, ArrowRight, Instagram, Globe, CheckCircle2, Eye, Banknote, 
 import { motion, useScroll, useTransform, useMotionValueEvent, useInView, AnimatePresence } from 'framer-motion';
 import { formatViews, getCoverGradient, type ApiManga } from '@/lib/api';
 import { useFeaturedManga, useLatestManga } from '@/hooks/useApi';
+import MagneticButton from '@/components/MagneticButton';
 import ScrollReveal from '@/components/ScrollReveal';
 import { AvatarCircles } from '@/components/ui/avatar-circles';
-import { LiquidButton } from '@/components/ui/liquid-glass-button';
 
 import featureLibrary from '@/assets/feature-library.png';
 import featureUpdates from '@/assets/feature-updates.png';
@@ -142,9 +142,13 @@ const WhyGlassCard: React.FC<{
         <div className="relative z-10">
           <h3 className="font-display text-2xl sm:text-3xl tracking-wider text-foreground mb-2">{card.title}</h3>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-sm">{card.desc}</p>
-          <LiquidButton size="sm" className="mt-4">
+          <motion.div
+            className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold border border-border/40 text-foreground/80 bg-background/20 backdrop-blur-sm"
+            whileHover={{ scale: 1.05, backgroundColor: 'hsla(var(--primary) / 0.15)' }}
+            whileTap={{ scale: 0.97 }}
+          >
             + Learn More
-          </LiquidButton>
+          </motion.div>
         </div>
       </div>
     </motion.div>
@@ -323,10 +327,10 @@ const HomePage: React.FC = () => {
 
               <motion.div className="flex flex-wrap gap-3" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, duration: 0.7 }}>
                 <Link to="/explore">
-                  <LiquidButton size="xl"><Play className="w-4 h-4 fill-current" /> Start Reading</LiquidButton>
+                  <MagneticButton className="btn-accent text-sm"><Play className="w-4 h-4 fill-current" /> Start Reading</MagneticButton>
                 </Link>
                 <Link to="/browse">
-                  <LiquidButton variant="outline" size="xl">Browse All <ArrowRight className="w-4 h-4" /></LiquidButton>
+                  <MagneticButton className="btn-outline text-sm">Browse All <ArrowRight className="w-4 h-4" /></MagneticButton>
                 </Link>
               </motion.div>
 
@@ -427,9 +431,13 @@ const HomePage: React.FC = () => {
             </div>
             <div className="mt-5 text-center">
               <Link to="/dashboard">
-                <LiquidButton size="lg">
-                  Start Earning <ArrowRight className="w-4 h-4" />
-                </LiquidButton>
+                <motion.button
+                  className="btn-accent px-8 py-3 rounded-xl font-semibold text-sm"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  Start Earning <ArrowRight className="w-4 h-4 inline ml-1" />
+                </motion.button>
               </Link>
             </div>
           </motion.div>
@@ -559,9 +567,9 @@ const HomePage: React.FC = () => {
                 Join hundreds of creators sharing their stories with millions of readers on Xtratoon.
               </p>
               <Link to="/dashboard">
-                <LiquidButton size="xl">
+                <MagneticButton className="btn-accent text-base px-8 py-4">
                   Start Publishing <ArrowRight className="w-5 h-5" />
-                </LiquidButton>
+                </MagneticButton>
               </Link>
             </div>
           </section>

@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, Eye, Bookmark, Play, ChevronRight, TrendingUp, Clock, Crown, Sparkles, Flame } from 'lucide-react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { LiquidButton } from '@/components/ui/liquid-glass-button';
 
 // Dummy manhwa data with random cover images
 const dummyManhwa = [
@@ -79,13 +78,21 @@ const FeaturedHero: React.FC<{ manhwa: typeof dummyManhwa[0] }> = ({ manhwa }) =
         transition={{ delay: 0.6, duration: 0.5 }}
       >
         <Link to={`/manhwa/${manhwa.id}`}>
-          <LiquidButton size="lg">
+          <motion.button
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-foreground text-background font-semibold text-sm border border-border/20"
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.97 }}
+          >
             <Play className="w-4 h-4 fill-current" /> Read Free
-          </LiquidButton>
+          </motion.button>
         </Link>
-        <LiquidButton variant="outline" size="lg">
+        <motion.button
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-border font-semibold text-sm text-foreground bg-background/30 backdrop-blur-md"
+          whileHover={{ scale: 1.05, y: -2 }}
+          whileTap={{ scale: 0.97 }}
+        >
           <Bookmark className="w-4 h-4" /> + Bookmark
-        </LiquidButton>
+        </motion.button>
       </motion.div>
 
       <motion.div
