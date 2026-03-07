@@ -198,8 +198,9 @@ const HomePage: React.FC = () => {
   const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
   const heroScale = useTransform(scrollYProgress, [0, 0.7], [1, 0.96]);
 
-  const featured = manhwaList[0];
-  const featuredSpotlight = manhwaList.slice(0, 4);
+  const { data: featuredManga } = useFeaturedManga();
+  const featured = featuredManga?.[0];
+  const featuredSpotlight = featuredManga?.slice(0, 4) || [];
 
 
   return (
