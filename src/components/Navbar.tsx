@@ -222,7 +222,7 @@ const Navbar: React.FC = () => {
                           <Link to={`/publisher/${user.username}`} onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2.5 px-3 py-2.5 text-sm hover:bg-primary/10 hover:text-primary transition-all font-medium rounded-xl"><UserIcon className="w-4 h-4" /> My Profile</Link>
                         </>
                       )}
-                      {user.role === 'admin' && (
+                      {(user.role === 'ADMIN' || user.role === 'MODERATOR') && (
                         <Link to="/admin" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2.5 px-3 py-2.5 text-sm hover:bg-primary/10 hover:text-primary transition-all font-medium rounded-xl"><Shield className="w-4 h-4" /> Admin Panel</Link>
                       )}
                       <div className="my-1 border-t border-border/30" />
