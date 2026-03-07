@@ -2,7 +2,8 @@ import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, Play, ArrowRight, Instagram, Globe, CheckCircle2, Eye, Banknote, Wallet, ShieldCheck, ChevronDown, HelpCircle } from 'lucide-react';
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
-import { manhwaList, formatViews } from '@/data/mockData';
+import { formatViews, getCoverGradient, type ApiManga } from '@/lib/api';
+import { useFeaturedManga, useLatestManga } from '@/hooks/useApi';
 import MagneticButton from '@/components/MagneticButton';
 import ScrollReveal from '@/components/ScrollReveal';
 
@@ -16,29 +17,30 @@ const XIcon = () => (
   </svg>
 );
 
-const FeaturedCard: React.FC<{ manhwa: typeof manhwaList[0]; index: number }> = ({ manhwa, index }) => (
-  <motion.div
-    initial={{ opacity: 0, scale: 0.9 }}
-    whileInView={{ opacity: 1, scale: 1 }}
-    viewport={{ once: true }}
-    transition={{ delay: index * 0.1, duration: 0.5 }}
-  >
-    <Link to={`/manhwa/${manhwa.id}`} className="group block">
-      <div className={`aspect-[2/3] ${manhwa.coverGradient} relative rounded-2xl border border-border overflow-hidden`} style={{ boxShadow: 'var(--shadow-card)' }}>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <h3 className="font-display text-lg text-white tracking-wide leading-tight group-hover:text-primary transition-colors">{manhwa.title}</h3>
-          <p className="text-xs text-white/70 mt-1">{manhwa.author}</p>
-          <div className="flex items-center gap-2 mt-2 text-[11px] text-white/60">
-            <span className="flex items-center gap-1"><Star className="w-3 h-3 text-gold fill-gold" />{manhwa.rating}</span>
-            <span>·</span>
-            <span>{formatViews(manhwa.views)} views</span>
+const FeaturedCard: React.FC<{ manhwa: ApiManga; index: number }> = ({ manhwa, index }) => {
+  const hasCover = !!manhwa.cover;
+  const gradient = getCoverGradient(index);
+  const rating = manhwa.ratingAverage ?? manhwa.rating ?? 0;
+  return (
+    <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: index * 0.1, duration: 0.5 }}>
+      <Link to={`/manhwa/${manhwa.slug}`} className="group block">
+        <div className={`aspect-[2/3] ${!hasCover ? gradient : ''} relative rounded-2xl border border-border overflow-hidden`} style={{ boxShadow: 'var(--shadow-card)' }}>
+          {hasCover && <img src={manhwa.cover} alt={manhwa.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-4">
+            <h3 className="font-display text-lg text-white tracking-wide leading-tight group-hover:text-primary transition-colors">{manhwa.title}</h3>
+            <p className="text-xs text-white/70 mt-1">{manhwa.author || manhwa.creator?.username}</p>
+            <div className="flex items-center gap-2 mt-2 text-[11px] text-white/60">
+              <span className="flex items-center gap-1"><Star className="w-3 h-3 text-gold fill-gold" />{rating.toFixed(1)}</span>
+              <span>·</span>
+              <span>{formatViews(manhwa.views)} views</span>
+            </div>
           </div>
         </div>
-      </div>
-    </Link>
-  </motion.div>
-);
+      </Link>
+    </motion.div>
+  );
+};
 
 const WhyCard: React.FC<{ image: string; title: string; desc: string; index: number }> = ({ image, title, desc, index }) => (
   <motion.div
