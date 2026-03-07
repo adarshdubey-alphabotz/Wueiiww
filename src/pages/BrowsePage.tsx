@@ -1,9 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, X, SlidersHorizontal } from 'lucide-react';
-import { manhwaList, allGenres } from '@/data/mockData';
+import { useSearchManga } from '@/hooks/useApi';
 import ManhwaCard from '@/components/ManhwaCard';
 import ScrollReveal from '@/components/ScrollReveal';
+
+const allGenres = [
+  'Action', 'Fantasy', 'Romance', 'Sci-Fi', 'Thriller', 'Drama',
+  'Mystery', 'Horror', 'Slice of Life', 'Adventure', 'Historical', 'School',
+];
 
 const BrowsePage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -16,6 +21,22 @@ const BrowsePage: React.FC = () => {
   const [sort, setSort] = useState<string>('Trending');
   const [showFilters, setShowFilters] = useState(false);
 
+  const apiParams = useMemo(() => ({
+    search: query || undefined,
+    status: status !== 'All' ? status.toUpperCase() : undefined,
+    sort: sort === 'Rating' ? 'rating' : sort === 'Views' ? 'views' : sort === 'New' ? undefined : undefined,
+    limit: 40,
+  }), [query, status, sort]);
+
+  const { data, isLoading } = useSearchManga(apiParams);
+  const results = data?.manga || [];
+
+  // Client-side genre filter (API doesn't have genre param in search)
+  const filtered = useMemo(() => {
+    if (!selectedGenres.length) return results;
+    return results.filter(m => m.genres.some(g => selectedGenres.includes(g)));
+  }, [results, selectedGenres]);
+
   const toggleGenre = (g: string) => {
     setSelectedGenres(prev => prev.includes(g) ? prev.filter(x => x !== g) : [...prev, g]);
   };
@@ -25,20 +46,6 @@ const BrowsePage: React.FC = () => {
     if (type === 'status') setStatus('All');
     if (type === 'query') setQuery('');
   };
-
-  const filtered = useMemo(() => {
-    let results = [...manhwaList];
-    if (query) results = results.filter(m => m.title.toLowerCase().includes(query.toLowerCase()) || m.author.toLowerCase().includes(query.toLowerCase()));
-    if (selectedGenres.length) results = results.filter(m => m.genres.some(g => selectedGenres.includes(g)));
-    if (status !== 'All') results = results.filter(m => m.status === status);
-    switch (sort) {
-      case 'Rating': results.sort((a, b) => b.rating - a.rating); break;
-      case 'New': results.sort((a, b) => b.chapters[b.chapters.length - 1]?.date.localeCompare(a.chapters[a.chapters.length - 1]?.date || '') || 0); break;
-      case 'Views': results.sort((a, b) => b.views - a.views); break;
-      default: results.sort((a, b) => b.views - a.views);
-    }
-    return results;
-  }, [query, selectedGenres, status, sort]);
 
   const activeFilters = [
     ...selectedGenres.map(g => ({ type: 'genre', value: g })),
@@ -56,12 +63,10 @@ const BrowsePage: React.FC = () => {
         </ScrollReveal>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Mobile filter toggle */}
           <button onClick={() => setShowFilters(!showFilters)} className="lg:hidden flex items-center gap-2 px-4 py-2 border-2 border-foreground text-sm font-semibold" style={{ boxShadow: '2px 2px 0 hsl(0 0% 8%)' }}>
             <SlidersHorizontal className="w-4 h-4" /> Filters
           </button>
 
-          {/* Sidebar */}
           <aside className={`lg:w-64 flex-shrink-0 space-y-6 ${showFilters ? 'block' : 'hidden lg:block'}`}>
             <div className="brutal-card p-4">
               <div className="relative">
@@ -104,7 +109,6 @@ const BrowsePage: React.FC = () => {
             </div>
           </aside>
 
-          {/* Results */}
           <div className="flex-1">
             {activeFilters.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-4">
@@ -116,13 +120,15 @@ const BrowsePage: React.FC = () => {
               </div>
             )}
 
-            <p className="text-sm text-muted-foreground mb-4 font-medium">{filtered.length} results</p>
+            <p className="text-sm text-muted-foreground mb-4 font-medium">
+              {isLoading ? 'Loading...' : `${filtered.length} results`}
+            </p>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 sm:gap-6">
-              {filtered.map(m => <ManhwaCard key={m.id} manhwa={m} />)}
+              {filtered.map((m, i) => <ManhwaCard key={m._id} manhwa={m} index={i} />)}
             </div>
 
-            {filtered.length === 0 && (
+            {!isLoading && filtered.length === 0 && (
               <div className="text-center py-16">
                 <p className="text-muted-foreground">No manhwa found matching your filters.</p>
               </div>
