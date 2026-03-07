@@ -563,9 +563,9 @@ const HomePage: React.FC = () => {
                 Join hundreds of creators sharing their stories with millions of readers on Xtratoon.
               </p>
               <Link to="/dashboard">
-                <MagneticButton className="btn-accent text-base px-8 py-4">
+                <LiquidButton size="xl">
                   Start Publishing <ArrowRight className="w-5 h-5" />
-                </MagneticButton>
+                </LiquidButton>
               </Link>
             </div>
           </section>
